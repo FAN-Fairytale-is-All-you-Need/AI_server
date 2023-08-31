@@ -20,6 +20,68 @@ def process_data():
     keyword = data.get("keyword")
     character = data.get("character")
     print(age, keyword, character)
+    keywordcheck = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {
+                "role": "system",
+                "content": "If the user's input is inappropriate or uneducated, output false or true\n\nIf the user's input is not a word but a sentence, please say no keyword\n\nIf it is not possible to create educational content through user input, please print false User input should be a concept that appears in the textbook. The user must input the concepts used in science, society, mathematics, engineering, etc and they do not allow everyday words",
+            },
+            {"role": "user", "content": "김치찌개"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "중력"},
+            {"role": "assistant", "content": "true"},
+            {"role": "user", "content": "게임을 잘하는 법"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "마약"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "중력에 대해서 알려줘"},
+            {"role": "assistant", "content": "no keyword"},
+            {"role": "user", "content": "주유소"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "섹스"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "담배"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "민주주의"},
+            {"role": "assistant", "content": "true"},
+            {"role": "user", "content": "총을 쏘는 법"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "안녕하세요"},
+            {"role": "assistant", "content": "no keyword"},
+            {"role": "user", "content": "바보"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "멍청이"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "잼민이"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "씨발"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "똥"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "더하기"},
+            {"role": "assistant", "content": "true"},
+            {"role": "user", "content": "포르쉐"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "맥도날드"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "소주"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": "맥주"},
+            {"role": "assistant", "content": "false"},
+            {"role": "user", "content": f"{keyword}"},
+        ],
+        temperature=1,
+        max_tokens=256,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
+    )
+    print(keywordcheck.choices[0].message["content"])
+    if keywordcheck.choices[0].message["content"] == "false":
+        return jsonify({"error": "Inappropriate keyword"}), 400
+    if keywordcheck.choices[0].message["content"] == "no keyword":
+        return jsonify({"error": "please enter a word not a sentence"}), 400
 
     completion = openai.ChatCompletion.create(
         model="gpt-4",  # 모델 설정
